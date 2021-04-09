@@ -130,8 +130,7 @@ public class Main {
                         }
                         System.out.print("Which entry would you like to delete?:");
                         selection = input.nextInt();
-
-                        System.out.println(personList.size());
+                        input.nextLine();
 
                         if (personList.size() == 1) {
                             personList.clear();
@@ -142,7 +141,35 @@ public class Main {
                         writeToFile(personList);
                     }
                     case 4 -> {
+                        personList = readFile();
+                        int count = 1, selection;
 
+                        if (personList.isEmpty()){
+                            System.out.println("No objects available to delete!");
+                            break;
+                        }
+
+                        for (Person p:personList) {
+                            System.out.println(count + " " + p);
+                            count++;
+                        }
+                        System.out.print("Which entry would you like to update?:");
+                        selection = input.nextInt() - 1;
+                        input.nextLine();
+
+                        personList.remove(selection);
+
+                        System.out.print("Please enter a name: ");
+                        name = input.nextLine();
+                        System.out.print("Please enter DOB: ");
+                        DOB = input.nextLine();
+                        System.out.print("Please enter email: ");
+                        email = input.nextLine();
+                        System.out.print("Please enter phone number: ");
+                        phoneNumber = input.nextLine();
+                        person = new Person(name, DOB, email, phoneNumber);
+
+                        personList.add(selection, person);
                     }
                 }
             } catch (InputMismatchException | IOException | ClassNotFoundException e) {
