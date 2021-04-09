@@ -95,6 +95,7 @@ public class Main {
                 // We add information to a file by calling writeToFile method.
                 switch (ans){
                     case 1 -> {
+                        personList.clear();
                         System.out.print("Please enter a name: ");
                         name = input.nextLine();
                         System.out.print("Please enter DOB: ");
@@ -116,6 +117,7 @@ public class Main {
                         }
                     }
                     case 3 -> {
+                        personList.clear();
                         personList = readFile();
                         int count = 1, selection;
 
@@ -129,13 +131,13 @@ public class Main {
                             count++;
                         }
                         System.out.print("Which entry would you like to delete?:");
-                        selection = input.nextInt();
+                        selection = input.nextInt() - 1;
                         input.nextLine();
 
                         if (personList.size() == 1) {
                             personList.clear();
                         } else {
-                            personList.remove(selection - 1); // We need to subtract 1 since indexing starts at 0
+                            personList.remove(selection);
                         }
 
                         writeToFile(personList);
@@ -170,6 +172,8 @@ public class Main {
                         person = new Person(name, DOB, email, phoneNumber);
 
                         personList.add(selection, person);
+
+                        writeToFile(personList);
                     }
                 }
             } catch (InputMismatchException | IOException | ClassNotFoundException e) {
@@ -192,8 +196,11 @@ public class Main {
 
         if (personList.isEmpty()) {
             writePerson.clear();
-        } else {
+        }
+        if (personList.size() == 1) {
             writePerson.add(personList.get(0));
+        } else {
+            writePerson = personList;
         }
 
         FileOutputStream fos = new FileOutputStream(file);
