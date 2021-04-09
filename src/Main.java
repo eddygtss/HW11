@@ -1,7 +1,5 @@
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -64,6 +62,7 @@ public class Main {
         Scanner input = new Scanner(System.in);
         int ans = 0;
         String name, DOB, email, phoneNumber;
+        ArrayList<Person> personList = new ArrayList<>();
         Person person;
 
         while (true) {
@@ -91,28 +90,62 @@ public class Main {
                 break;
             }
 
-            // First code lines in try block gathers information for the Account class
+            // Try block handles all of the option selections.
             try {
-                // Then we obtain information for either a Services or Supplies object
-                if (ans == 1) {
-                    System.out.print("Please enter a name: ");
-                    name = input.nextLine();
-                    System.out.print("Please enter DOB: ");
-                    DOB = input.nextLine();
-                    System.out.print("Please enter email: ");
-                    email = input.nextLine();
-                    System.out.print("Please enter phone number: ");
-                    phoneNumber = input.nextLine();
-                    person = new Person(name, DOB, email, phoneNumber);
-                    writeToFile(person);
-                    System.out.println("Person written to file successfully!");
-                } else if (ans == 2) {
+                // We add information to a file by calling writeToFile method.
+                switch (ans){
+                    case 1 -> {
+                        System.out.print("Please enter a name: ");
+                        name = input.nextLine();
+                        System.out.print("Please enter DOB: ");
+                        DOB = input.nextLine();
+                        System.out.print("Please enter email: ");
+                        email = input.nextLine();
+                        System.out.print("Please enter phone number: ");
+                        phoneNumber = input.nextLine();
+                        person = new Person(name, DOB, email, phoneNumber);
+                        personList.add(person);
+                        writeToFile(personList);
+                        System.out.println("Person written to file successfully!");
+                    }
+                    case 2 -> {
+                        personList = readFile();
 
-                    System.out.println("Supplies added successfully!");
-                } else {
-                    System.out.println("Please make sure to enter an integer from 1-3");
+                        for (Person p:personList) {
+                            System.out.println(p);
+                        }
+                    }
+                    case 3 -> {
+                        personList = readFile();
+                        int count = 1, selection;
+
+                        if (personList.isEmpty()){
+                            System.out.println("No objects available to delete!");
+                            break;
+                        }
+
+                        for (Person p:personList) {
+                            System.out.println(count + " " + p);
+                            count++;
+                        }
+                        System.out.print("Which entry would you like to delete?:");
+                        selection = input.nextInt();
+
+                        System.out.println(personList.size());
+
+                        if (personList.size() == 1) {
+                            personList.clear();
+                        } else {
+                            personList.remove(selection - 1); // We need to subtract 1 since indexing starts at 0
+                        }
+
+                        writeToFile(personList);
+                    }
+                    case 4 -> {
+
+                    }
                 }
-            } catch (InputMismatchException | IOException e) {
+            } catch (InputMismatchException | IOException | ClassNotFoundException e) {
                 input.nextLine();
                 System.out.println("ERROR: " + e.toString());
             }
@@ -121,13 +154,31 @@ public class Main {
 
     }
 
-    public static void writeToFile(Person person) throws IOException {
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("Person.bin"));
+    public static void writeToFile(ArrayList<Person> personList) throws IOException, ClassNotFoundException {
+        String file = "Person.bin";
+        File file1 = new File(file);
+        ArrayList<Person> writePerson = new ArrayList<>();
 
-        objectOutputStream.writeObject(person);
+        if (file1.exists()) {
+            writePerson = readFile();
+        }
+
+        if (personList.isEmpty()) {
+            writePerson.clear();
+        } else {
+            writePerson.add(personList.get(0));
+        }
+
+        FileOutputStream fos = new FileOutputStream(file);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fos);
+
+        objectOutputStream.writeObject(writePerson);
+
     }
 
-    public static void readFile(){
+    public static ArrayList<Person> readFile() throws IOException, ClassNotFoundException {
+        ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("Person.bin"));
 
+        return (ArrayList<Person>) objectInputStream.readObject();
     }
 }
