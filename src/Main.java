@@ -3,59 +3,6 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-class Person implements Serializable {
-    String name, DOB, email, phoneNumber;
-
-    public Person(String name, String DOB, String email, String phoneNumber) {
-        this.name = name;
-        this.DOB = DOB;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDOB() {
-        return DOB;
-    }
-
-    public void setDOB(String DOB) {
-        this.DOB = DOB;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    @Override
-    public String toString() {
-        return "Person{" +
-                "name='" + name + '\'' +
-                ", DOB='" + DOB + '\'' +
-                ", Email='" + email + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                '}';
-    }
-}
-
 public class Main {
 
     public static void main(String[] args) {
@@ -106,7 +53,7 @@ public class Main {
                         phoneNumber = input.nextLine();
                         person = new Person(name, DOB, email, phoneNumber);
                         personList.add(person);
-                        writeToFile(personList);
+                        writeToFile(personList,1);
                         System.out.println("Person written to file successfully!");
                     }
                     case 2 -> {
@@ -127,10 +74,10 @@ public class Main {
                         }
 
                         for (Person p:personList) {
-                            System.out.println(count + " " + p);
+                            System.out.println("#" + count + ": " + p);
                             count++;
                         }
-                        System.out.print("Which entry would you like to delete?:");
+                        System.out.print("Which entry would you like to delete?: ");
                         selection = input.nextInt() - 1;
                         input.nextLine();
 
@@ -140,7 +87,12 @@ public class Main {
                             personList.remove(selection);
                         }
 
-                        writeToFile(personList);
+                        for (Person p:personList) {
+                            System.out.println("#" + count + ": " + p);
+                            count++;
+                        }
+
+                        writeToFile(personList, 3);
                     }
                     case 4 -> {
                         personList = readFile();
@@ -155,7 +107,7 @@ public class Main {
                             System.out.println(count + " " + p);
                             count++;
                         }
-                        System.out.print("Which entry would you like to update?:");
+                        System.out.print("Which entry would you like to update?: ");
                         selection = input.nextInt() - 1;
                         input.nextLine();
 
@@ -173,7 +125,7 @@ public class Main {
 
                         personList.add(selection, person);
 
-                        writeToFile(personList);
+                        writeToFile(personList,4);
                     }
                 }
             } catch (InputMismatchException | IOException | ClassNotFoundException e) {
@@ -185,7 +137,7 @@ public class Main {
 
     }
 
-    public static void writeToFile(ArrayList<Person> personList) throws IOException, ClassNotFoundException {
+    public static void writeToFile(ArrayList<Person> personList, int sel) throws IOException, ClassNotFoundException {
         String file = "Person.bin";
         File file1 = new File(file);
         ArrayList<Person> writePerson = new ArrayList<>();
@@ -197,9 +149,11 @@ public class Main {
         if (personList.isEmpty()) {
             writePerson.clear();
         }
-        if (personList.size() == 1) {
+
+        if (sel == 1){
             writePerson.add(personList.get(0));
-        } else {
+        }
+        else if (sel == 3 || sel == 4) {
             writePerson = personList;
         }
 
